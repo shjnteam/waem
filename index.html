@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#12263f">
+  <meta name="description" content="وائم 360° — إدارة المشاريع والمستخدمين والاشتراكات محليًا دون خادم">
+  <title>وائم WAEM 360° | لوحة الإدارة</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">و</div><div><h1>وائم</h1><p>WAEM · SMART MANAGEMENT</p></div></div>
+    <div><p class="nav-label">القائمة الرئيسية</p><nav class="nav" id="main-nav" aria-label="أقسام المنصة"></nav></div>
+    <div class="sidebar-foot">وائم 360° · إصدار مستقل<br>حفظ محلي على هذا الجهاز فقط</div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div class="crumb" id="breadcrumb">وائم 360° / لوحة القيادة</div><div class="top-actions"><span class="local-indicator">● يعمل دون خادم</span><div class="avatar">و</div></div></header>
+    <div class="content" id="app" aria-live="polite"></div>
+  </main>
+</div>
+<div id="modal-root"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script defer src="./app.js"></script>
+</body>
+</html>
