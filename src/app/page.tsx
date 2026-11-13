@@ -12,7 +12,7 @@ export default function Dashboard() {
     <aside className="sidebar">
       <div className="brand"><div className="brand-mark">و</div><div><h1>وائم</h1><p>WAEM · SMART MANAGEMENT</p></div></div>
       <div><p className="nav-label">القائمة الرئيسية</p><nav className="nav">
-        <a className="active" href="/"><LayoutDashboard size={17}/><span>لوحة القيادة</span></a>
+        <Link className="active" href="/"><LayoutDashboard size={17}/><span>لوحة القيادة</span></Link>
         <a href="#tasks"><ClipboardList size={17}/><span>إدارة المشروع والمهام</span></a>
         <a href="#schedule"><Clock3 size={17}/><span>الجدول الزمني</span></a>
         <a href="#finance"><CircleDollarSign size={17}/><span>التكاليف والإيرادات</span></a>
