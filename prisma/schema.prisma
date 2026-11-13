@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus { INVITED ACTIVE SUSPENDED }
+enum ProjectStatus { PLANNED ACTIVE ON_HOLD COMPLETED ARCHIVED }
+enum TaskStatus { TODO IN_PROGRESS BLOCKED DONE }
+enum Priority { LOW MEDIUM HIGH URGENT }
+enum AuditAction { CREATE UPDATE DELETE LOGIN LOGOUT APPROVE REJECT EXPORT }
+
+model Organization {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  users     User[]
+  projects  Project[]
+  branches  Branch[]
+}
+
+model Branch {
+  id             String       @id @default(cuid())
+  organizationId String
+  name           String
+  code           String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  @@unique([organizationId, code])
+}
+
+model User {
+  id             String       @id @default(cuid())
+  organizationId String
+  name           String
+  email          String       @unique
+  passwordHash   String?
+  status         UserStatus   @default(INVITED)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  roleLinks      UserRole[]
+  auditLogs      AuditLog[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  @@index([organizationId, status])
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  nameAr      String
+  description String?
+  userLinks   UserRole[]
+  permissions RolePermission[]
+  createdAt   DateTime         @default(now())
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  module      String
+  description String?
+  roles       RolePermission[]
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  @@id([userId, roleId])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  @@id([roleId, permissionId])
+}
+
+model Project {
+  id             String        @id @default(cuid())
+  organizationId String
+  code           String
+  name           String
+  description    String?
+  status         ProjectStatus @default(PLANNED)
+  startDate      DateTime?
+  dueDate        DateTime?
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tasks          Task[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  @@unique([organizationId, code])
+  @@index([organizationId, status])
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  projectId   String
+  code        String
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Priority   @default(MEDIUM)
+  startDate   DateTime?
+  dueDate     DateTime?
+  progress    Int        @default(0)
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  @@unique([projectId, code])
+  @@index([projectId, status, dueDate])
+}
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  userId      String?
+  action      AuditAction
+  entityType  String
+  entityId    String?
+  description String?
+  ipAddress   String?
+  userAgent   String?
+  metadata    Json?
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt   DateTime    @default(now())
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+}
